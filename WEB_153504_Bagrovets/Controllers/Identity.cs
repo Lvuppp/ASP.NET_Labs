@@ -1,43 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Web_153504_Bagrovets_Lab1.Controllers;
-using Web_153504_Bagrovets_Lab1.Entities;
 
-namespace Web_153504_Bagrovets.Controllers
+namespace Web_153504_Bagrovets_Lab1.Controllers
 {
-    public class Home : Controller
+    public class Identity : Controller
     {
-        // GET: Home
+        // GET: Identity
         public ActionResult Index()
         {
-            List<ListDemo> products = new List<ListDemo>
-            {
-                new ListDemo { Id = 1, Name = "Продукт 1" },
-                new ListDemo { Id = 2, Name = "Продукт 2" },
-                new ListDemo { Id = 3, Name = "Продукт 3" }
-            };
-
-            SelectList productList = new SelectList(products, "Id", "Name");
-
-            ViewData["ItemList"] = productList;
-            ViewData["LabName"] = "Лабараторная работа№2";
             return View();
         }
 
-        // GET: Home/Details/5
+        // GET: Identity/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Home/Create
+        // GET: Identity/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Home/Create
+        // POST: Identity/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -52,13 +38,13 @@ namespace Web_153504_Bagrovets.Controllers
             }
         }
 
-        // GET: Home/Edit/5
+        // GET: Identity/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Home/Edit/5
+        // POST: Identity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -73,13 +59,13 @@ namespace Web_153504_Bagrovets.Controllers
             }
         }
 
-        // GET: Home/Delete/5
+        // GET: Identity/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Home/Delete/5
+        // POST: Identity/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
