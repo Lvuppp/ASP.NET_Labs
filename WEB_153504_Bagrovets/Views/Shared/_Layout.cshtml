@@ -1,49 +1,85 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Web_153504_Bagrovets</title>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Web_153504_Bagrovets.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/WebLabs_BSUIR_V02.styles.css" asp-append-
+          version="true" />
+    <link href="~/lib/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Web_153504_Bagrovets</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">WebLabsV02</a>
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="#">Лб 1</a>
+                <a class="nav-item nav-link" href="#">Каталог</a>
+                <a class="nav-item nav-link" href="#">Администрирование</a>
+            </div>
+            <a href="#" class="navbar-text ms-auto">
+                00,0 руб <i class="fa-solid fa-cart-shopping"></i> (0)
+            </a>
+            <div class="dropdown ms-4 nav-color">
+                <button class="btn btn-secondary dropdown-toggle"
+                        type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    User@gmail.com
+                    <img src="images/default-profile-picture.png" width="30"
+                         alt="User" class="rounded nav-color" />
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <span class="dropdown-item-text">
+                            <img src="images/default-profile-picture.png"
+                                 width="50" alt="User" class="rounded" />
+                            user@gmail.com
+                        </span>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                        <form id="logoutForm" class="form-inline">
+                            <button id="logout" type="submit" class="nav-link btn btn-link text-dark">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
+    <main>
+        @RenderBody()
+    </main>
+    <footer class="footer fixed-bottom">
         <div class="container">
-            &copy; 2023 - Web_153504_Bagrovets - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="navbar navbar-dark navbar-expand-md bg-dark">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-item nav-link" href="https://www.instagram.com/">
+                        <i class="fa-brands fa-instagram fa-2x"></i>
+                    </a>
+
+                    <a class="nav-item nav-link" href="https://web.telegram.org/k/">
+
+                        <i class="fa-brands fa-telegram fa-2x"></i>
+                    </a>
+
+                    <a class="nav-item nav-link" href="http://www.linkedin.com">
+
+                        <i class="fa-brands fa-linkedin fa-2x"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
