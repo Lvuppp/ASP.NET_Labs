@@ -1,8 +1,13 @@
+using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
+using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddScoped<ICategoryService, MemoryCategoryService>();
+builder.Services.AddScoped<IProductService, MemoryProductService>();
 
 var app = builder.Build();
 

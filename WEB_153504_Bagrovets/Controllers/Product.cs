@@ -1,13 +1,27 @@
-﻿ using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Web_153504_Bagrovets.Domain.Entities;
+using Web_153504_Bagrovets_Lab1.Services;
+using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
+using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
 
 namespace Web_153504_Bagrovets_Lab1.Controllers
 {
     public class Product : Controller
     {
+        private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
         // GET: Product
+        Product(IProductService productService, ICategoryService categoryService)
+        {
+            _productService = productService;
+        }
         public ActionResult Index()
         {
+            var productResponse = await _productService.GetProductListAsync(category);
+            if (!productResponse.Success)
+                return NotFound(productResponse.ErrorMessage);
+            return View(productResponse.Data.Items);
             return View();
         }
 

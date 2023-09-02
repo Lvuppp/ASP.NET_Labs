@@ -10,4 +10,12 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Web_153504_Bagrovets.Domain\Web_153504_Bagrovets.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Product\" />
+  </ItemGroup>
+
 </Project>
