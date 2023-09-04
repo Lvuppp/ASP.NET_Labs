@@ -12,17 +12,20 @@ namespace Web_153504_Bagrovets_Lab1.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         // GET: Product
-        Product(IProductService productService, ICategoryService categoryService)
+        public Product(IProductService productService, ICategoryService categoryService)
         {
             _productService = productService;
+            _categoryService = categoryService;
         }
-        public ActionResult Index()
+        public async Task<ActionResult> Index(string? category, int pageNo)
         {
-            var productResponse = await _productService.GetProductListAsync(category);
+            var productResponse = await _productService.GetProductListAsync(category, pageNo);
             if (!productResponse.Success)
                 return NotFound(productResponse.ErrorMessage);
-            return View(productResponse.Data.Items);
-            return View();
+
+            ViewData["categories"] = (await _categoryService.GetCategoryListAsync()).Data;
+
+            return View(productResponse.Data);
         }
 
         // GET: Product/Details/5

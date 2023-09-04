@@ -11,11 +11,11 @@ namespace Web_153504_Bagrovets.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            List<ListDemo> products = new List<ListDemo>
+            List<ListData> products = new List<ListData>
             {
-                new ListDemo { Id = 1, Name = "Продукт 1" },
-                new ListDemo { Id = 2, Name = "Продукт 2" },
-                new ListDemo { Id = 3, Name = "Продукт 3" }
+                new ListData { Id = 1, Name = "Продукт 1" },
+                new ListData { Id = 2, Name = "Продукт 2" },
+                new ListData { Id = 3, Name = "Продукт 3" }
             };
 
             SelectList productList = new SelectList(products, "Id", "Name");

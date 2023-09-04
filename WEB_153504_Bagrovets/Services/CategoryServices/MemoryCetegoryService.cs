@@ -5,6 +5,10 @@ namespace Web_153504_Bagrovets_Lab1.Services.CategoryServices
 {
     public class MemoryCategoryService : ICategoryService
     {
+        public MemoryCategoryService()
+        {
+
+        }
         public Task<ResponseData<List<Category>>> GetCategoryListAsync()
         {
             var categories = new List<Category>{
