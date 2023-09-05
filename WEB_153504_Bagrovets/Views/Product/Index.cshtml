@@ -48,7 +48,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">@Html.DisplayFor(modelItem => product.Name)</h5>
-                            <img src="@Html.DisplayFor(modelItem => product.Image)" />
+                            <img src="images/@Html.DisplayFor(modelItem => product.Image)" />
                             <p class="card-text">@Html.DisplayFor(modelItem => product.Description)</p>
                             <p class="card-text">@Html.DisplayFor(modelItem => product.Price)</p>
                             <a class="btn btn-primary" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" asp-route-returnUrl="@returnUrl">Add to cart</a>

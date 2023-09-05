@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Web_153504_Bagrovets.API\Web_153504_Bagrovets.API.csproj" />
     <ProjectReference Include="..\Web_153504_Bagrovets.Domain\Web_153504_Bagrovets.Domain.csproj" />
   </ItemGroup>
 
