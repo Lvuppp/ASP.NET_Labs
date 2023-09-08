@@ -26,11 +26,17 @@ namespace Web_153504_Bagrovets.API.Services.ProductServices
             throw new NotImplementedException();
         }
 
-        public async Task<ResponseData<ListModel<Product>>> GetProductListAsync(string? categoryNormalizedName, int pageNo = 1, int pageSize = 3)
+        public async Task<ResponseData<ListModel<Product>>> GetProductListAsync(string? categoryNormalizedName, int pageNo, int pageSize)
         {
             if (pageSize > _maxPageSize)
                 pageSize = _maxPageSize;
-            var query = _dbContext.Products.AsQueryable();
+            else if (pageSize ==  0)
+                pageSize = 3;
+
+            if (pageNo == 0)
+                pageNo = 1;
+
+            var query = _dbContext.Products.Include(p => p.Category).AsQueryable();
             var dataList = new ListModel<Product>();
             query = query.Where(d => categoryNormalizedName==null
             || d.Category.NormalizedName.Equals(categoryNormalizedName));

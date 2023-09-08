@@ -22,7 +22,9 @@ string connection = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connection));
 
 var app = builder.Build();
-DbInitializer.SeedData(app);
+//DbInitializer.SeedData(app);
+//DbInitializer.DeleteData(app); 
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

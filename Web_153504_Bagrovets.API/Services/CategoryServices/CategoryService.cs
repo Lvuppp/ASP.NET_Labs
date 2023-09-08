@@ -16,7 +16,6 @@ namespace Web_153504_Bagrovets.API.Services.CategoryServices
         public Task<ResponseData<List<Category>>> GetCategoryListAsync()
         {
             var query = _context.Categories.AsQueryable();
-            var dataList = new ListModel<Category>();
             return Task.FromResult(new ResponseData<List<Category>>
             {
                 Data = query.ToList()

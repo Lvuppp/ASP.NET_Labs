@@ -19,7 +19,7 @@ namespace Web_153504_Bagrovets.API.Controllers
 
         [HttpGet]
         // GET: api/<ProductController>
-        public async Task<ActionResult<ResponseData<List<Product>>>> Get(string? category,int pageNo = 1, int pageSize = 3) {
+        public async Task<ActionResult<ResponseData<List<Product>>>> Get(string? category,int pageNo, int pageSize) {
             return Ok(await _productControllerService.GetProductListAsync(
             category,
             pageNo,
