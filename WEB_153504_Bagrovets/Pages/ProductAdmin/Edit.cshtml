@@ -1,5 +1,5 @@
 ﻿@page
-@model Web_153504_Bagrovets_Lab1.Pages.EditModel
+@model Web_153504_Bagrovets_Lab1.Pages.ProductAdmin.EditModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -40,6 +40,10 @@
                 <span asp-validation-for="Product.Image" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <input asp-for=Image type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Upload</button>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -53,3 +57,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+ 

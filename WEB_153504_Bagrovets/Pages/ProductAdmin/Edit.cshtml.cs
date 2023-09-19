@@ -6,26 +6,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Web_153504_Bagrovets.API.Data;
 using Web_153504_Bagrovets.Domain.Entities;
 using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
 using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
 
-namespace Web_153504_Bagrovets_Lab1.Pages
+namespace Web_153504_Bagrovets_Lab1.Pages.ProductAdmin
 {
     public class EditModel : PageModel
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
 
-        public EditModel(IProductService productService)
+        public EditModel(IProductService productService, ICategoryService categoryService)
         {
             _productService = productService;
+            _categoryService = categoryService;
         }
 
         [BindProperty]
         public Product Product { get; set; } = default!;
 
+        [BindProperty]
+        public IFormFile? Image { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             var products = (await _productService.GetProductListAsync(null)).Data.Items;
@@ -59,7 +61,7 @@ namespace Web_153504_Bagrovets_Lab1.Pages
 
             try
             {
-                await _productService.UpdateProductAsync(Product.Id, Product, null);
+                await _productService.UpdateProductAsync(Product.Id, Product, Image);
             }
             catch (DbUpdateConcurrencyException)
             {

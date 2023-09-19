@@ -9,7 +9,7 @@ using Web_153504_Bagrovets.Domain.Entities;
 using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
 using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
 
-namespace Web_153504_Bagrovets_Lab1.Pages
+namespace Web_153504_Bagrovets_Lab1.Pages.ProductAdmin
 {
     public class CreateModel : PageModel
     {
@@ -30,8 +30,9 @@ namespace Web_153504_Bagrovets_Lab1.Pages
 
         [BindProperty]
         public Product Product { get; set; } = default!;
-        
 
+        [BindProperty]
+        public IFormFile? Image { get; set; }
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
@@ -39,7 +40,7 @@ namespace Web_153504_Bagrovets_Lab1.Pages
             {
                 return Page();
             }
-            await _productService.CreateProductAsync(Product,null);
+            await _productService.CreateProductAsync(Product, Image);
 
             return RedirectToPage("./Index");
         }

@@ -13,8 +13,19 @@ namespace Web_153504_Bagrovets.API.Controllers
     public class ProductController : ControllerBase
     {
         private IProductService _productControllerService;
-        public ProductController(IProductService ProductControllerService) {
+        private string imagePath;
+        private string _appUri;
+        private ILogger<ProductController> _logger; 
+        public ProductController(IProductService ProductControllerService,
+            IWebHostEnvironment env,
+            IConfiguration configuration,
+            ILogger<ProductController> logger) 
+        {
             _productControllerService = ProductControllerService;
+            imagePath = Path.Combine(env.WebRootPath, "images");
+            _appUri = configuration.GetSection("appUri").Value;
+            _logger = logger;
+
         }
 
         [HttpGet]
@@ -26,6 +37,18 @@ namespace Web_153504_Bagrovets.API.Controllers
             pageSize));
         }
 
+        // POST: api/ProductController/5
+        [HttpPost("{id}")]
+        public async Task<ActionResult<ResponseData<string>>> PostImage(int id, IFormFile formFile) 
+        {
+            var response = await _productControllerService.SaveImageAsync(id, formFile);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
         // GET api/<ProductController>/5
         [HttpGet("{id}")]
         public string Get(int id)
@@ -35,20 +58,23 @@ namespace Web_153504_Bagrovets.API.Controllers
 
         // POST api/<ProductController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<ResponseData<Product>>> Post([FromBody] Product product)
         {
+            return Ok(await _productControllerService.CreateProductAsync(product));
         }
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task Put(int id,[FromBody] Product product)
         {
+            await _productControllerService.UpdateProductAsync(id, product);
         }
 
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
+            await _productControllerService.DeleteProductAsync(id);
         }
     }
 }

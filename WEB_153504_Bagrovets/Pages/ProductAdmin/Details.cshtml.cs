@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Web_153504_Bagrovets.API.Data;
 using Web_153504_Bagrovets.Domain.Entities;
 using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
 
-namespace Web_153504_Bagrovets_Lab1.Pages
+namespace Web_153504_Bagrovets_Lab1.Pages.ProductAdmin
 {
     public class DetailsModel : PageModel
     {

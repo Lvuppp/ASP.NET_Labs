@@ -1,5 +1,8 @@
-﻿using System.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using System.Configuration;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using Web_153504_Bagrovets.Domain.Entities;
@@ -29,30 +32,38 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
         public async Task<ResponseData<Product>> CreateProductAsync(Product product,
             IFormFile? formFile)
         {
-            var uri = new Uri(_httpClient.BaseAddress.AbsoluteUri + "Products");
-            var response = await _httpClient.PostAsJsonAsync(
-            uri,
-            product,
-            _serializerOptions);
+            var uri = new Uri($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}");
+            var response = await _httpClient.PostAsJsonAsync(uri, product);
+
             if (response.IsSuccessStatusCode)
             {
                 var data = await response
                 .Content
                 .ReadFromJsonAsync<ResponseData<Product>>
                 (_serializerOptions);
-                return data; // Product;
+                
+                if(formFile != null)
+                    await SaveImageAsync(data.Data.Id, formFile);
+                
+                return data;
             }
-            _logger
-            .LogError($"-----> object not created. Error:{response.StatusCode.ToString()}");
+            _logger.LogError($"-----> object not created. Error:{response.StatusCode.ToString()}");
             return new ResponseData<Product>
             {
                 Success = false,
                 ErrorMessage = $"Объект не добавлен. Error:{response.StatusCode.ToString()}"
             };
         }
-        public Task DeleteProductAsync(int id)
+        public async Task DeleteProductAsync(int id)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return;
+            }
+
+            _logger.LogError($"-----> object not created. Error:{response.StatusCode.ToString()}");
         }
 
         public Task<ResponseData<Product>> GetProductByIdAsync(int id)
@@ -63,7 +74,7 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
         public async Task<ResponseData<ListModel<Product>>> GetProductListAsync(string? categoryNormalizedName, int pageNo)
         {
             // подготовка URL запроса
-            var urlString = new StringBuilder($"{_httpClient.BaseAddress.AbsoluteUri}Product");
+            var urlString = new StringBuilder($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}");
             var pageSize = _configuration.GetSection("ItemsPerPage").Value;
             // добавить категорию в маршрут
             if (categoryNormalizedName != null)
@@ -115,9 +126,39 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
             };
         }
 
-        public Task UpdateProductAsync(int id, Product product, IFormFile? formFile)
+        public async Task UpdateProductAsync(int id, Product product, IFormFile? formFile)
         {
-            throw new NotImplementedException();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}/{id}"),
+            };
+
+            var response = await _httpClient.PutAsJsonAsync(request.RequestUri, product);
+
+            if (response.IsSuccessStatusCode)
+            {
+                if (formFile != null)
+                    await SaveImageAsync(id, formFile);
+                return;
+            }
+
+            _logger.LogError($"-----> object not update. Error:{response.StatusCode.ToString()}");
+        }
+
+        private async Task SaveImageAsync(int id, IFormFile image)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{_httpClient.BaseAddress.AbsoluteUri}Products/{id}"),
+            };
+
+            var content = new MultipartFormDataContent();
+            var streamContent = new StreamContent(image.OpenReadStream());
+            content.Add(streamContent, "formFile", image.FileName);
+            request.Content = content;
+            await _httpClient.SendAsync(request);
         }
     }
 }

@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 using System.Drawing.Printing;
 using Web_153504_Bagrovets.API.Data;
 using Web_153504_Bagrovets.Domain.Entities;
 using Web_153504_Bagrovets_Lab1.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Web_153504_Bagrovets.API.Services.ProductServices
 {
@@ -11,14 +14,28 @@ namespace Web_153504_Bagrovets.API.Services.ProductServices
     {
         private AppDbContext _dbContext;
         private readonly int _maxPageSize = 20;
-        public ProductService( AppDbContext appDbContext)  
+        private HttpContext _httpContext;
+        private string _imagePath;
+        public ProductService( AppDbContext appDbContext, IWebHostEnvironment env,
+            IHttpContextAccessor accessor)  
         {
             _dbContext = appDbContext;
+            _imagePath = Path.Combine(env.WebRootPath, "images");
+            _httpContext = accessor.HttpContext; 
         }
 
-        public Task DeleteProductAsync(int id)
+        public async Task DeleteProductAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _dbContext.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return;
+            }
+
+            _dbContext.Products.Remove(product);
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public Task<ResponseData<Product>> GetProductByIdAsync(int id)
@@ -69,19 +86,75 @@ namespace Web_153504_Bagrovets.API.Services.ProductServices
             };
             return response;
         }
-        public Task UpdateProductAsync(int id, Product product)
+        public async Task UpdateProductAsync(int id, Product product)
         {
-            throw new NotImplementedException();
+            var productTmp = await _dbContext.Products.FindAsync(id);
+            _dbContext.Entry(productTmp).CurrentValues.SetValues(product);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<ResponseData<Product>> CreateProductAsync(Product product)
+        public async Task<ResponseData<Product>> CreateProductAsync(Product product)
         {
-            throw new NotImplementedException();
+            await _dbContext.Products.AddAsync(product);
+            await _dbContext.SaveChangesAsync();
+            return new ResponseData<Product> { Data = product };
         }
 
-        public Task<ResponseData<string>> SaveImageAsync(int id, IFormFile formFile)
+        public async Task<ResponseData<string>> SaveImageAsync(int id, IFormFile formFile)
         {
-            throw new NotImplementedException();
+            var responseData = new ResponseData<string>();
+            var product = await _dbContext.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                responseData.Success = false;
+                responseData.ErrorMessage = "No item found";
+                return responseData;
+            }
+
+            var host = "https://"+ _httpContext.Request.Host;
+
+            if (formFile != null)
+            {
+                // Удалить предыдущее изображение
+                if (!String.IsNullOrEmpty(product.Image))
+                {
+                    var prevImage = Path.Combine(_imagePath,Path.GetFileName(product.Image));
+                    try
+                    {
+                        if(File.Exists(prevImage))
+                            File.Delete(prevImage);
+                    }
+                    catch (Exception e)
+                    {
+                        throw;
+                    }
+
+                }   
+
+                // Создать имя файла
+                var ext = Path.GetExtension(formFile.FileName);
+                var fName = Path.ChangeExtension(Path.GetRandomFileName(), ext);
+
+                // Сохранить файл
+                try
+                {
+                    using (FileStream destStream = new FileStream(Path.Combine(_imagePath, fName), FileMode.Create))
+                    {
+                        destStream.CopyTo(destStream);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
+
+                // Указать имя файла в объекте
+                product.Image = fName;
+                await _dbContext.SaveChangesAsync();
+            }
+            responseData.Data = product.Image;
+            return responseData;
         }
     }
 }
