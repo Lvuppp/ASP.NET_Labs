@@ -16,10 +16,16 @@ namespace Web_153504.IdentityServer
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt
+            => {
+                opt.SignIn.RequireConfirmedAccount = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireDigit = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
             builder.Services
                 .AddIdentityServer(options =>
                 {
@@ -35,7 +41,7 @@ namespace Web_153504.IdentityServer
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<ApplicationUser>();
-
+            builder.Services.AddControllers();
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {
@@ -59,7 +65,7 @@ namespace Web_153504.IdentityServer
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.MapControllers();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseIdentityServer();

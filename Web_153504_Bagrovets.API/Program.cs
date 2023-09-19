@@ -27,6 +27,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddHttpContextAccessor();
+
 // получаем строку подключения из файла конфигурации
 string connection = builder.Configuration.GetConnectionString("Default");
 

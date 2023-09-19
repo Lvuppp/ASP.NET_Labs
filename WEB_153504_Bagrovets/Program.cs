@@ -12,6 +12,26 @@ UriData.ApiUri = builder.Configuration.GetSection("UriData")["ApiUri"];
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services.AddAuthentication(opt =>
+    {
+        opt.DefaultScheme = "cookie";
+        opt.DefaultChallengeScheme = "oidc";
+    }).AddCookie("cookie").AddOpenIdConnect("oidc", options =>
+    {
+        options.Authority =
+            builder.Configuration["InteractiveServiceSettings:AuthorityUrl"];
+        options.ClientId =
+            builder.Configuration["InteractiveServiceSettings:ClientId"];
+        options.ClientSecret =
+            builder.Configuration["InteractiveServiceSettings:ClientSecret"];
+
+        options.GetClaimsFromUserInfoEndpoint = true;
+        options.ResponseType = "code";
+        options.ResponseMode = "query";
+        options.SaveTokens = true;
+    });
+
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IProductService, ApiProductService>(opt =>opt.BaseAddress=new Uri(UriData.ApiUri));
 builder.Services.AddHttpClient<ICategoryService, ApiCategoryService>(opt =>opt.BaseAddress=new Uri(UriData.ApiUri));
 var app = builder.Build();
@@ -31,15 +51,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseAuthentication(); 
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapRazorPages();
-});
 
+app.MapRazorPages().RequireAuthorization();
 
 app.Run();

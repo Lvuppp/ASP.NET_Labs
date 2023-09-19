@@ -6,9 +6,10 @@ namespace Web_153504_Bagrovets_Lab1.Views.Components
 {
     public class CartViewComponent : ViewComponent
     {
-        public string Invoke()
+        public IViewComponentResult Invoke(double price)
         {
-            return "0.0";
+            ViewData["price"] = price; 
+            return View();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using System.Configuration;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Policy;
 using System.Text;
@@ -16,9 +19,10 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
         private readonly IConfiguration _configuration;
         private JsonSerializerOptions _serializerOptions;
         private ILogger<ApiProductService> _logger;
+        private HttpContext _httpContext;
 
         public ApiProductService(HttpClient httpClient, IConfiguration configuration,
-            ILogger<ApiProductService> logger)
+            ILogger<ApiProductService> logger, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
             _configuration = configuration;
@@ -27,11 +31,16 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
             _logger = logger;
+            _httpContext = httpContextAccessor.HttpContext;
         }
 
         public async Task<ResponseData<Product>> CreateProductAsync(Product product,
             IFormFile? formFile)
         {
+            var token = await _httpContext.GetTokenAsync("access_token");
+            _httpClient.DefaultRequestHeaders
+                .Authorization = new AuthenticationHeaderValue("bearer", token);
+
             var uri = new Uri($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}");
             var response = await _httpClient.PostAsJsonAsync(uri, product);
 
@@ -56,6 +65,10 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
         }
         public async Task DeleteProductAsync(int id)
         {
+            var token = await _httpContext.GetTokenAsync("access_token");
+            _httpClient.DefaultRequestHeaders
+                .Authorization = new AuthenticationHeaderValue("bearer", token);
+
             var response = await _httpClient.DeleteAsync($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}/{id}");
 
             if (response.IsSuccessStatusCode)
@@ -73,6 +86,7 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
 
         public async Task<ResponseData<ListModel<Product>>> GetProductListAsync(string? categoryNormalizedName, int pageNo)
         {
+
             // подготовка URL запроса
             var urlString = new StringBuilder($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}");
             var pageSize = _configuration.GetSection("ItemsPerPage").Value;
@@ -97,6 +111,8 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
             }
             // отправить запрос к API
             string url = urlString.ToString();
+
+           
             var response = await _httpClient.GetAsync(new Uri(url));
             if (response.IsSuccessStatusCode)
             {
@@ -134,6 +150,10 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
                 RequestUri = new Uri($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}/{id}"),
             };
 
+            var token = await _httpContext.GetTokenAsync("access_token");
+            _httpClient.DefaultRequestHeaders
+                .Authorization = new AuthenticationHeaderValue("bearer", token);
+
             var response = await _httpClient.PutAsJsonAsync(request.RequestUri, product);
 
             if (response.IsSuccessStatusCode)
@@ -154,11 +174,15 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
                 RequestUri = new Uri($"{_httpClient.BaseAddress.AbsoluteUri}Products/{id}"),
             };
 
+            var token = await _httpContext.GetTokenAsync("access_token");
+            _httpClient.DefaultRequestHeaders
+                .Authorization = new AuthenticationHeaderValue("bearer", token);
             var content = new MultipartFormDataContent();
             var streamContent = new StreamContent(image.OpenReadStream());
             content.Add(streamContent, "formFile", image.FileName);
             request.Content = content;
             await _httpClient.SendAsync(request);
         }
+     
     }
 }
