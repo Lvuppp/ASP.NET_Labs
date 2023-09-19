@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Index";
+    var itemList = ViewData["ItemList"] as SelectList;
 }
 
 <!DOCTYPE html>
@@ -11,19 +12,21 @@
 <body>
     
     <main class="container mt-3">
-        <h1>Лабораторная работа 1</h1>
+        <h1>@ViewData["LabName"]</h1>
         <h2>Список</h2>
         <ol class="letter-list">
-            <li>элемента 0 списка</li>
-            <li>элемента 1 списка</li>
-            <li>элемента 2 списка</li>
-            <li>элемента 3 списка</li>
-            <li>элемента 4 списка</li>
+            @for (int i = 0; i < 5; i++)
+            {
+                <li>Элемент @i списка</li>
+            }
         </ol>
+
         <hr>
         <h2>Форма</h2>
-        <form name="myForm" method="post" runat="server">
+        <form name="myForm" method="post">
             <div class="row mb-3">
+                <select class="form-select mb-3" asp-items="itemList" name="itemSelecter">
+                </select>
                 <label for="inputEmail3" class="col-sm-2 col-form-label"></label>
                 <div class="col-sm-10">
                     <div class="form-check">

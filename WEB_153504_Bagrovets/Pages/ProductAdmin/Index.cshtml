@@ -1,0 +1,73 @@
+﻿@page
+@using Web_153504_Bagrovets.Domain.Entities;
+@model Web_153504_Bagrovets_Lab1.Pages.ProductAdmin.IndexModel
+@using Web_153504_Bagrovets_Lab1.Models;
+
+@{
+    ViewData["Title"] = "Admin panel";
+    var request = ViewContext.HttpContext.Request;
+    var returnUrl = request.Path + request.QueryString.ToUriComponent();
+}
+
+<div class="container">
+    <h1>Admin panel</h1>
+
+    <p>
+        <a class="btn btn-dark" asp-page="Create">Create New</a>
+    </p>
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].Category)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].Price)
+                </th>
+                <th>
+                    <img src="images/@Html.DisplayNameFor(model => model.Product[0].Image)" />
+
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Product)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        <img src="images/@Html.DisplayFor(modelItem => item.Image)" />
+
+
+                    </td>
+                    <td>
+                        <a class="btn btn-dark" asp-page="./Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-dark" asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                        <a class="btn btn-dark" asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+  
+</div>
