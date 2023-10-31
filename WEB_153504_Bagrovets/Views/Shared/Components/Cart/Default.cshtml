@@ -1,2 +1,5 @@
-﻿
-
+﻿﻿<a class="navbar-text ms-auto"
+    asp-controller="cart"
+    asp-action="Index">
+    @Math.Round(@Model.TotalPrice, 2) $ <i class="fa-solid fa-cart-shopping"></i> (@Model.Count)
+</a>

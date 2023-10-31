@@ -40,39 +40,6 @@
         </ul>
     </div>
 
-    <div class="content">
-        <div class="row">
-            @foreach (var product in Model.Items)
-            {
-                <div class="col-sm-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">@Html.DisplayFor(modelItem => product.Name)</h5>
-                            <img src="images/@Html.DisplayFor(modelItem => product.Image)" />
-                            <p class="card-text">@Html.DisplayFor(modelItem => product.Description)</p>
-                            <p class="card-text">@Html.DisplayFor(modelItem => product.Price)</p>
-                            <a class="btn btn-primary" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" asp-route-returnUrl="@returnUrl">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" asp-controller="product" asp-action="index"
-                   asp-route-category="@category" asp-route-pageNo="@prev">Previous</a>
-            </li>
-            @for (int i = 1; i < Model.TotalPages + 1; i++)
-            {
-                <li class="page-item"><a class="page-link" asp-controller="product" asp-action="index"
-                    asp-route-category ="@category" asp-route-pageNo="@i">@i</a></li>
-            }
-            <li class="page-item">
-                <a class="page-link" asp-controller="product" asp-action="index"
-                   asp-route-category="@category" asp-route-pageNo="@next">Next</a>
-            </li>
-        </ul>
-    </nav>
+
+    <partial name="_CatalogPartial" />
 </div>

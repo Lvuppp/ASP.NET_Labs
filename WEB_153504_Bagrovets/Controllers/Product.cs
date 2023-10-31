@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Web_153504_Bagrovets.Domain.Entities;
+using Web_153504_Bagrovets_Lab1.Extension;
 using Web_153504_Bagrovets_Lab1.Services;
 using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
 using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
@@ -17,13 +18,28 @@ namespace Web_153504_Bagrovets_Lab1.Controllers
             _productService = productService;
             _categoryService = categoryService;
         }
-        public async Task<ActionResult> Index(string? category, int pageNo)
+
+        [Route("Product")]
+        [Route("Product/{category}")]
+        public async Task<ActionResult> Index(string category, int pageNo)
         {
-            var productResponse = await _productService.GetProductListAsync(category, pageNo);
+            var productResponse = await _productService.GetProductListAsync(
+                category, pageNo);
+            
             if (!productResponse.Success)
                 return NotFound(productResponse.ErrorMessage);
 
-            ViewData["categories"] = (await _categoryService.GetCategoryListAsync()).Data;
+            var categories = (await _categoryService.GetCategoryListAsync()).Data;
+
+            if (!productResponse.Success)
+                return NotFound(productResponse.ErrorMessage);
+
+            ViewData["categories"] = categories;
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_CatalogPartial", productResponse.Data);
+            }
 
             return View(productResponse.Data);
         }

@@ -1,6 +1,8 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -79,9 +81,37 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
             _logger.LogError($"-----> object not created. Error:{response.StatusCode.ToString()}");
         }
 
-        public Task<ResponseData<Product>> GetProductByIdAsync(int id)
+        public async Task<ResponseData<Product>> GetProductByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var urlString = new StringBuilder($"{_httpClient.BaseAddress.AbsoluteUri}{_configuration.GetSection("apiProductUri").Value}/{id}");
+            var response = await _httpClient.GetAsync(new Uri(urlString.ToString()));
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    return await response
+                    .Content
+                    .ReadFromJsonAsync<ResponseData<Product>>
+                    (_serializerOptions);
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogError($"-----> Ошибка: {ex.Message}");
+                    return new ResponseData<Product>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Ошибка: {ex.Message}"
+                    };
+                }
+            }
+
+            _logger.LogError($"-----> Данные не получены от сервера. Error:{response.StatusCode.ToString()}");
+            return new ResponseData<Product>
+            {
+                Success = false,
+                ErrorMessage = $"Данные не получены от сервера. Error: {response.StatusCode.ToString()}"
+            };
         }
 
         public async Task<ResponseData<ListModel<Product>>> GetProductListAsync(string? categoryNormalizedName, int pageNo)
@@ -111,8 +141,6 @@ namespace Web_153504_Bagrovets_Lab1.Services.ProductSevices
             }
             // отправить запрос к API
             string url = urlString.ToString();
-
-           
             var response = await _httpClient.GetAsync(new Uri(url));
             if (response.IsSuccessStatusCode)
             {

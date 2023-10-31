@@ -1,0 +1,34 @@
+﻿@using Web_153504_Bagrovets.Domain.Entities;
+
+@model Cart
+@{
+    ViewBag.Title = "Cart";
+    var request = ViewContext.HttpContext.Request;
+    var returnUrl = request.Path + request.QueryString.ToUriComponent();
+}
+
+<table class="table table-striped">
+    <tbody>
+        @foreach (var cartItem in Model.CartItems)
+        {
+            <tr>
+                <th scope="row">
+                    <img src="@cartItem.Value.Item.Image" height="200" />
+                </th>
+                <td>@cartItem.Value.Item.Name</td>
+                <td>@cartItem.Value.Item.Description</td>
+                <td>@cartItem.Value.Item.Price</td>
+                <td>@cartItem.Value.Count</td>
+                <td>
+                    <a class="btn btn-danger"
+                       asp-controller="Cart"
+                       asp-action="RemoveItem"
+                       asp-route-id="@cartItem.Value.Item.Id"
+                       asp-route-returnUrl="@returnUrl">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

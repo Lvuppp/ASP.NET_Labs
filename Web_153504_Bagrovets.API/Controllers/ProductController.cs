@@ -57,9 +57,9 @@ namespace Web_153504_Bagrovets.API.Controllers
         [HttpGet("{id}")]
 
         [AllowAnonymous]
-        public string Get(int id)
+        public async Task<ActionResult<ResponseData<Product>>> Get(int id)
         {
-            return "value";
+            return Ok(await _productControllerService.GetProductByIdAsync(id));
         }
 
         // POST api/<ProductController>

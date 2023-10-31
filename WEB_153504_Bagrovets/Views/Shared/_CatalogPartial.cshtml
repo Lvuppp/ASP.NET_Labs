@@ -1,0 +1,32 @@
+﻿@using Web_153504_Bagrovets_Lab1.Models;
+@using Web_153504_Bagrovets.Domain.Entities;
+@{
+    var request = ViewContext.HttpContext.Request;
+    var returnUrl = request.Path + request.QueryString.ToUriComponent();
+}
+@model ListModel<Product>
+
+<div class="content">
+    <div class="row">
+        @foreach (var product in Model.Items)
+        {
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@Html.DisplayFor(modelItem => product.Name)</h5>
+                        <img src="@product.Image" />
+                        <p class="card-text">@Html.DisplayFor(modelItem => product.Description)</p>
+                        <p class="card-text">@Html.DisplayFor(modelItem => product.Price)</p>
+                        <a class="btn btn-primary" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" asp-route-returnUrl="@returnUrl">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<nav>
+    <Pager current-page="@Model.CurrentPage"
+           total-pages="@Model.TotalPages">
+    </Pager>
+</nav>

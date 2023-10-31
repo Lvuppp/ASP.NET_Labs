@@ -1,15 +1,21 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Mvc;
-using Web_153504_Bagrovets_Lab1.Entities;
+using Web_153504_Bagrovets.Domain.Entities;
 
 namespace Web_153504_Bagrovets_Lab1.Views.Components
 {
     public class CartViewComponent : ViewComponent
     {
-        public IViewComponentResult Invoke(double price)
+        public Cart Cart { get; set; }
+
+        public CartViewComponent(Cart cart)
         {
-            ViewData["price"] = price; 
-            return View();
+            Cart = cart;
+        }
+
+        public IViewComponentResult Invoke()
+        {
+            return View(Cart);
         }
     }
 }

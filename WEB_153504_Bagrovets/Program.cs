@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Web_153504_Bagrovets.Domain.Entities;
 using Web_153504_Bagrovets_Lab1.Models;
+using Web_153504_Bagrovets_Lab1.Services;
 using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
 using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
+using Web_153504_Bagrovets_Lab1.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,16 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IProductService, ApiProductService>(opt =>opt.BaseAddress=new Uri(UriData.ApiUri));
 builder.Services.AddHttpClient<ICategoryService, ApiCategoryService>(opt =>opt.BaseAddress=new Uri(UriData.ApiUri));
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<PagerTagHelper>();
+
+builder.Services.AddScoped<Cart>(SessionCart.GetCart);
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,14 +63,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
-app.UseAuthentication(); 
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
 app.MapRazorPages().RequireAuthorization();
-
+app.UseSession();
 app.Run();
