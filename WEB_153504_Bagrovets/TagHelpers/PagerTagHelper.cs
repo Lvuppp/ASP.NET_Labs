@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.AspNetCore.Routing;
 
 namespace Web_153504_Bagrovets_Lab1.TagHelpers
 {
@@ -22,8 +20,8 @@ namespace Web_153504_Bagrovets_Lab1.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var divTag = new TagBuilder("nav");
-            divTag.AddCssClass("pagination");
+            var divTag = new TagBuilder("div");
+            divTag.AddCssClass("pagination justify-content-center");
             divTag.InnerHtml.AppendHtml(CreatePageLink("&laquo;", CurrentPage - 1, GetArrowClass)); // previous page link
             for (var pageNum = 1; pageNum <= TotalPages; pageNum++)
             {
