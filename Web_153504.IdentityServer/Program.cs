@@ -1,5 +1,8 @@
-﻿using Serilog;
+using Serilog;
 using Web_153504.IdentityServer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Web_153504.IdentityServer.Data;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -22,13 +25,13 @@ try
 
     // this seeding is only for the template to bootstrap the DB and users.
     // in production you will likely want a different approach.
-    if (args.Contains("/seed"))
-    {
+    //if (args.Contains("/seed"))
+    //{
         Log.Information("Seeding database...");
         SeedData.EnsureSeedData(app);
         Log.Information("Done seeding database. Exiting.");
-        return;
-    }
+    //    return;
+    //}
 
     app.Run();
 }

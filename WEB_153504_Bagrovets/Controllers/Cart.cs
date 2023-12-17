@@ -1,83 +1,57 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Web_153504_Bagrovets_Lab1.Extension;
+using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
 
 namespace Web_153504_Bagrovets_Lab1.Controllers
 {
     public class Cart : Controller
     {
         // GET: Cart
+        private IProductService _productService;
+        private Web_153504_Bagrovets.Domain.Entities.Cart _cart;
+        public Cart(IProductService productService, Web_153504_Bagrovets.Domain.Entities.Cart cart)
+        {
+            _productService = productService;
+            _cart = cart;
+        }
+
+        [Authorize]
+        [Route("[controller]/add/{id:int}")]
+        public async Task<ActionResult> Add(int id, string returnUrl)
+        {
+            var cart = HttpContext.Session.Get<Web_153504_Bagrovets.Domain.Entities.Cart>("cart") ?? new();
+            var data = await _productService.GetProductByIdAsync(id);
+            if (data.Success)
+            {
+                _cart.AddItem(data.Data, 1);
+                HttpContext.Session.Set("cart", _cart);
+            }
+            return Redirect(returnUrl);
+        }
+
+        [Authorize]
+        public async Task<ActionResult> RemoveItem(int id, string returnUrl)
+        {
+            var data = await _productService.GetProductByIdAsync(id);
+            if (data.Success)
+            {
+                _cart.RemoveItem(data.Data);
+                HttpContext.Session.Set("cart", _cart);
+            }
+            return Redirect(returnUrl);
+        }
         public ActionResult Index()
         {
-            return View();
-        }
-
-        // GET: Cart/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Cart/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Cart/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            if (Request.IsAjaxRequest())
             {
-                return RedirectToAction(nameof(Index));
+                return PartialView("_CartPartial", _cart);
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(_cart);
         }
 
-        // GET: Cart/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
 
-        // POST: Cart/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Cart/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Cart/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

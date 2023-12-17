@@ -6,7 +6,6 @@ using System.Drawing.Printing;
 using Web_153504_Bagrovets.API.Data;
 using Web_153504_Bagrovets.Domain.Entities;
 using Web_153504_Bagrovets_Lab1.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Web_153504_Bagrovets.API.Services.ProductServices
 {
@@ -38,9 +37,14 @@ namespace Web_153504_Bagrovets.API.Services.ProductServices
             await _dbContext.SaveChangesAsync();
         }
 
-        public Task<ResponseData<Product>> GetProductByIdAsync(int id)
+        public async Task<ResponseData<Product>> GetProductByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _dbContext.Products.FindAsync(id);
+            var response = new ResponseData<Product>
+            {
+                Data = product
+            };
+            return response;
         }
 
         public async Task<ResponseData<ListModel<Product>>> GetProductListAsync(string? categoryNormalizedName, int pageNo, int pageSize)

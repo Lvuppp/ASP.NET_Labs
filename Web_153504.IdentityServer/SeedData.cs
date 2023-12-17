@@ -17,14 +17,60 @@ namespace Web_153504.IdentityServer
                 var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
                 context.Database.Migrate();
 
+
+                var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                
+
+                var user = roleMgr.FindByNameAsync("user").Result;
+
+                if (user == null)
+                {
+                    user = new IdentityRole
+                    {
+                        Name = "user",
+                    };
+                    var result = roleMgr.CreateAsync(user).Result;
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+                    Log.Debug("user role create");
+                }
+                else
+                {
+                    Log.Debug("user role already exists");
+                }
+
+                var admin = roleMgr.FindByNameAsync("admin").Result;
+
+                if (admin == null)
+                {
+                    admin = new IdentityRole
+                    {
+                        Name = "admin",
+                    };
+                    var result = roleMgr.CreateAsync(admin).Result;
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+                    Log.Debug("admin role create");
+                }
+                else
+                {
+                    Log.Debug("admin role already exists");
+                }
+
                 var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var alice = userMgr.FindByNameAsync("alice").Result;
+                var alice = userMgr.FindByNameAsync("user").Result;
                 if (alice == null)
                 {
                     alice = new ApplicationUser
                     {
-                        UserName = "alice",
-                        Email = "AliceSmith@email.com",
+                        UserName = "user",
+                        Email = "user@email.com",
                         EmailConfirmed = true,
                     };
                     var result = userMgr.CreateAsync(alice, "Pass123$").Result;
@@ -34,29 +80,29 @@ namespace Web_153504.IdentityServer
                     }
 
                     result = userMgr.AddClaimsAsync(alice, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Alice"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
+                            new Claim(JwtClaimTypes.Name, "User"),
+                            new Claim(JwtClaimTypes.Role, "USER"),
+                            new Claim(JwtClaimTypes.GivenName, "1"),
+                            new Claim(JwtClaimTypes.FamilyName, "2"),
                         }).Result;
                     if (!result.Succeeded)
                     {
                         throw new Exception(result.Errors.First().Description);
                     }
-                    Log.Debug("alice created");
+                    Log.Debug("user created");
                 }
                 else
                 {
-                    Log.Debug("alice already exists");
+                    Log.Debug("user already exists");
                 }
 
-                var bob = userMgr.FindByNameAsync("bob").Result;
+                var bob = userMgr.FindByNameAsync("admin").Result;
                 if (bob == null)
                 {
                     bob = new ApplicationUser
                     {
-                        UserName = "bob",
-                        Email = "BobSmith@email.com",
+                        UserName = "admin",
+                        Email = "admin@email.com",
                         EmailConfirmed = true
                     };
                     var result = userMgr.CreateAsync(bob, "Pass123$").Result;
@@ -66,10 +112,10 @@ namespace Web_153504.IdentityServer
                     }
 
                     result = userMgr.AddClaimsAsync(bob, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Bob Smith"),
-                            new Claim(JwtClaimTypes.GivenName, "Bob"),
-                            new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                            new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
+                            new Claim(JwtClaimTypes.Name, "admin"),
+                            new Claim(JwtClaimTypes.Role, "ADMIN"),
+                            new Claim(JwtClaimTypes.GivenName, "1"),
+                            new Claim(JwtClaimTypes.FamilyName, "2"),
                             new Claim("location", "somewhere")
                         }).Result;
                     if (!result.Succeeded)
@@ -82,6 +128,9 @@ namespace Web_153504.IdentityServer
                 {
                     Log.Debug("bob already exists");
                 }
+
+
+
             }
         }
     }

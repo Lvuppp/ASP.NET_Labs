@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Web_153504_Bagrovets.API.Data;
 using Web_153504_Bagrovets.API.Data.CategoryServices;
@@ -12,9 +13,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        opt.Authority = builder
+        .Configuration
+        .GetSection("isUri").Value;
+        opt.TokenValidationParameters.ValidateAudience = false;
+        opt.TokenValidationParameters.ValidTypes =
+        new[] { "at+jwt" };
+    });
+
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddHttpContextAccessor();
+
 // получаем строку подключения из файла конфигурации
 string connection = builder.Configuration.GetConnectionString("Default");
 
@@ -35,8 +48,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();
 
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
 using Web_153504_Bagrovets.API.Services.ProductServices;
 using Web_153504_Bagrovets.Domain.Entities;
@@ -10,6 +11,7 @@ namespace Web_153504_Bagrovets.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private IProductService _productControllerService;
@@ -29,6 +31,7 @@ namespace Web_153504_Bagrovets.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         // GET: api/<ProductController>
         public async Task<ActionResult<ResponseData<List<Product>>>> Get(string? category,int pageNo, int pageSize) {
             return Ok(await _productControllerService.GetProductListAsync(
@@ -39,6 +42,7 @@ namespace Web_153504_Bagrovets.API.Controllers
 
         // POST: api/ProductController/5
         [HttpPost("{id}")]
+
         public async Task<ActionResult<ResponseData<string>>> PostImage(int id, IFormFile formFile) 
         {
             var response = await _productControllerService.SaveImageAsync(id, formFile);
@@ -51,9 +55,11 @@ namespace Web_153504_Bagrovets.API.Controllers
 
         // GET api/<ProductController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+
+        [AllowAnonymous]
+        public async Task<ActionResult<ResponseData<Product>>> Get(int id)
         {
-            return "value";
+            return Ok(await _productControllerService.GetProductByIdAsync(id));
         }
 
         // POST api/<ProductController>

@@ -12,11 +12,19 @@ namespace Web_153504.IdentityServer
         public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddRazorPages();
-
+            builder.Services.AddControllers();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
+                 opt =>
+                 {
+                     opt.SignIn.RequireConfirmedAccount = false;
+                     opt.Password.RequireNonAlphanumeric = false;
+                     opt.Password.RequireLowercase = false;
+                     opt.Password.RequireUppercase = false;
+                     opt.Password.RequireDigit = false;
+                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -27,8 +35,6 @@ namespace Web_153504.IdentityServer
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-
-                    // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                     options.EmitStaticAudienceClaim = true;
                 })
                 .AddInMemoryIdentityResources(Config.IdentityResources)
@@ -63,10 +69,12 @@ namespace Web_153504.IdentityServer
             app.UseStaticFiles();
             app.UseRouting();
             app.UseIdentityServer();
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            app.MapControllers();
             app.MapRazorPages()
                 .RequireAuthorization();
+
 
             return app;
         }
