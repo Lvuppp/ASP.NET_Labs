@@ -29,12 +29,12 @@ namespace Web_153504_Bagrovets_Lab1.Controllers
             if (!productResponse.Success)
                 return NotFound(productResponse.ErrorMessage);
 
-            var categories = (await _categoryService.GetCategoryListAsync()).Data;
+            var categoriesResponse = (await _categoryService.GetCategoryListAsync()).Data;
 
-            if (!productResponse.Success)
+            if (categoriesResponse.Count == 0)
                 return NotFound(productResponse.ErrorMessage);
 
-            ViewData["categories"] = categories;
+            ViewData["categories"] = categoriesResponse;
 
             if (Request.IsAjaxRequest())
             {

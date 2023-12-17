@@ -6,6 +6,10 @@ using Web_153504_Bagrovets_Lab1.Services;
 using Web_153504_Bagrovets_Lab1.Services.CategoryServices;
 using Web_153504_Bagrovets_Lab1.Services.ProductSevices;
 using Web_153504_Bagrovets_Lab1.TagHelpers;
+using Serilog;
+using Serilog.Events;
+using System.Diagnostics;
+using Web_153504_Bagrovets_Lab1;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +48,19 @@ builder.Services.AddScoped<PagerTagHelper>();
 builder.Services.AddScoped<Cart>(SessionCart.GetCart);
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
+    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration).Filter.ByIncludingOnly(evt =>
+    {
+        if (evt.Properties.TryGetValue("StatusCode", out var statusCodeValue) &&
+            statusCodeValue is ScalarValue statusCodeScalar &&
+            statusCodeScalar.Value is int statusCode)
+        {
+            Debug.WriteLine("Report error with code 1xx, 3xx, 4xx ,5xx");
+            return statusCode < 200 || statusCode >= 300;
+        }
+        return false;
+    }));
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
@@ -71,5 +88,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages().RequireAuthorization();
-app.UseSession();
+app.UseSession(); 
+app.UseLoggingMiddleware();
 app.Run();
